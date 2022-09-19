@@ -1,31 +1,39 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
+	"text/template"
 
 	// TODO Использовать логгер: https://pkg.go.dev/github.com/go-telegram-bot-api/telegram-bot-api/v5#SetLogger
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/sirupsen/logrus"
+	"github.com/stanlyzoolo/smartLaFamiliaBot/config"
+	"github.com/stanlyzoolo/smartLaFamiliaBot/currencies"
+	currencyRate "github.com/stanlyzoolo/smartLaFamiliaBot/currency_rate"
 )
 
 func main() {
-	cfg, err := config.New()
+	cfg, token, err := config.New()
 	if err != nil {
 		logrus.Errorf("can't read response: %d", err)
 	}
 
-	curReq, err := currencies.CurrencyReq(cfg.OneRateURL, config.USD)
-	if err != nil {
-		fmt.Printf("Bad news: %s", err.Error())
-	}
-
-	// TODO вынести токен в переменную окружения
-	bot, err := tgbotapi.NewBotAPI("5677404105:AAEGlBwarltHXGSzvjJOxZbXNGTatij_98w")
+	bot, err := tgbotapi.NewBotAPI(token.Token)
 	if err != nil {
 		panic(err)
+	}
+
+	for _, c := range currencies.Flags {
+		
+	}
+
+	// TODO с 29 по 51 вынести из main
+	curReq, err := currencyRate.CurrencyReq(cfg.OneRateURL, currencies.USD)
+	if err != nil {
+		logrus.Errorf("bad news: %d", err)
 	}
 
 	resp, err := bot.Client.Do(curReq)
@@ -40,11 +48,18 @@ func main() {
 		logrus.Errorf("can't read response: %d", err)
 	}
 
-	var cur currencies.Currency
+	var cur currencyRate.Currency
 	if err := json.Unmarshal(respBody, &cur); err != nil {
-		logrus.Errorf("can't Unmarshal body: %d", err)
+		logrus.Errorf("can't unmarshal body: %d", err)
 	}
 
+	cur.Flag = currencies.Flags[currencies.USD]
+
+	t := template.Must(template.New("MessageTemplate").Parse(MessageTemplate))
+
+	var b bytes.Buffer
+	t.Execute(&b, &cur)
+	x := string(b.Bytes())
 	// Instead of typing the API token directly into the file, we're using environment variables.
 	// This makes it easy to configure our Bot to use the right account and prevents us from
 	// leaking our real token into the world.
@@ -74,12 +89,10 @@ func main() {
 			continue
 		}
 
-		rates := fmt.Sprint(cur.Name, cur.OfficialRate)
-
 		// Now that we know we've gotten a new message, we can construct a
 		// reply! We'll take the Chat ID and Text from the incoming message
 		// and use it to create a new message.
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, rates)
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, x)
 		// We'll also say that this message is a reply to the previous message.
 		// For any other specifications than Chat ID or Text, you'll need to
 		// set fields on the `MessageConfig`.
@@ -95,3 +108,8 @@ func main() {
 		}
 	}
 }
+
+const MessageTemplate = `
+Курс НацБанка РБ на сегодня.
+{{.Flag}}{{.Name}}: {{.OfficialRate}}
+`

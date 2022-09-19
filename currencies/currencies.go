@@ -1,4 +1,4 @@
-package config
+package currencies
 
 const (
 	// Коды валют по ИСО 4217
@@ -8,8 +8,8 @@ const (
 	CNY = 156
 
 	// Флаги в UTF-8
-	UnitedStates  = "U+1F1FA U+1F1F8"
-	EuropeanUnion = "U+1F1EA U+1F1FA"
-	Russia        = "U+1F1F7 U+1F1FA"
-	China         = "U+1F1E8 U+1F1F3"
+	UnitedStates      = "\U0001F1FA\U0001F1F8"
+	EuropeanUnion     = "\U0001F1EA\U0001F1FA"
+	RussianFederation = "\U0001F1F7\U0001F1FA"
+	ChinaRepublic     = "\U0001F1E8\U0001F1F3"
 )

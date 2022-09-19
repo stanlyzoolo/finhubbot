@@ -13,13 +13,21 @@ type NBRB struct {
 	OneRateURL  string
 }
 
-func New() (*NBRB, error) {
+type BotToken struct {
+	Token string
+}
+
+func New() (*NBRB, *BotToken, error) {
 	if err := godotenv.Load(); err != nil {
-		return nil, errors.New("can't load .env file")
+		return nil, nil, errors.New("can't load .env file")
 	}
 
 	return &NBRB{
-		AllRatesURL: os.Getenv("AllRatesURL"),
-		OneRateURL:  os.Getenv("OneRateURL"),
-	}, nil
+			AllRatesURL: os.Getenv("AllRatesURL"),
+			OneRateURL:  os.Getenv("OneRateURL"),
+		},
+		&BotToken{
+			Token: os.Getenv("TGbotTOKEN"),
+		},
+		nil
 }
