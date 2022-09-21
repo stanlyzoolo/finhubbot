@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"strconv"
-	"time"
 
 	// TODO Использовать логгер: https://pkg.go.dev/github.com/go-telegram-bot-api/telegram-bot-api/v5#SetLogger
 
@@ -14,11 +13,6 @@ import (
 	"github.com/stanlyzoolo/smartLaFamiliaBot/config"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/messages"
 )
-
-type scheduler struct {
-	startTime   time.Time
-	periodicity time.Duration
-}
 
 func main() {
 	urlNBRB, telegram, err := config.New()

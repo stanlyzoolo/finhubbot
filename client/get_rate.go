@@ -20,7 +20,7 @@ func (c *Client) GetRates(cfg *config.NBRB) ([]currencies.Rate, error) {
 
 		resp, err := c.Bot.Client.Do(req)
 		if err != nil {
-			return nil, errors.Errorf("can't Do request: %d", err)
+			return nil, errors.Errorf("can't Do request: %s", err.Error())
 		}
 
 		respBody, err := io.ReadAll(resp.Body)
