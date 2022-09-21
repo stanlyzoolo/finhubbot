@@ -10,12 +10,12 @@ import (
 )
 
 func readResponse(resp *http.Response) (*currencies.Rate, error) {
-	defer resp.Body.Close()
-
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, errors.Errorf("can't read response: %d", err)
 	}
+
+	defer resp.Body.Close()
 
 	var cur currencies.Currency
 
