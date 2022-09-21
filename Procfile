@@ -1,1 +1,1 @@
-web: bin/smartLaFamiliaBot
+app: bin/smartLaFamiliaBot
