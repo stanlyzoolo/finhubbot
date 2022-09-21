@@ -36,7 +36,6 @@ func main() {
 	}
 
 	var msg messages.Summary
-
 	summary, err := msg.GenerateFromRates(rates)
 	if err != nil {
 		logrus.Error(err)
