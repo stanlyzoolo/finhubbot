@@ -31,7 +31,7 @@ func main() {
 		fmt.Println(err)
 	}
 
-	rates, err := tgClient.GetRates(urlNBRB) // panic
+	rates, err := tgClient.GetRates(urlNBRB)
 	if err != nil {
 		logrus.Error(err)
 	}
