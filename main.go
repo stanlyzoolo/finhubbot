@@ -25,7 +25,6 @@ func main() {
 		fmt.Println(err)
 	}
 
-	// Init bot
 	tgClient, err := client.New(telegram.APIkey)
 	if err != nil {
 		fmt.Println(err)
