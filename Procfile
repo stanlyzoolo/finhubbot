@@ -1,1 +1,1 @@
-web: bin/smartLaFamiliaBot 
+web: bin/smartLaFamiliaBot -p $PORT
