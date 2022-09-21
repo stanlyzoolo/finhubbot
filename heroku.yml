@@ -1,6 +1,6 @@
 build:
   docker:
-    app: Dockerfile
+    web: Dockerfile
 
 run:
-  app: bin/smartLaFamiliaBot
+  web: bin/smartLaFamiliaBot
