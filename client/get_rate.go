@@ -1,6 +1,10 @@
 package client
 
 import (
+	"encoding/json"
+	"io"
+
+	"github.com/juju/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/config"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/currencies"
@@ -20,14 +24,22 @@ func (c *Client) GetRates(cfg *config.NBRB) ([]currencies.Rate, error) {
 			logrus.Errorf("can't Do request: %d", err)
 		}
 
-		rate, err := readResponse(resp)
+		respBody, err := io.ReadAll(resp.Body)
 		if err != nil {
-			logrus.Errorf("can't read response: %d", err)
+			return nil, errors.Errorf("can't read response: %d", err)
+		}
+
+		defer resp.Body.Close()
+
+		var rate currencies.Rate
+
+		if err := json.Unmarshal(respBody, &rate); err != nil {
+			return nil, errors.Errorf("can't unmarshal body: %d", err)
 		}
 
 		rate.CountryFlagUTF8 = flag
 
-		rates = append(rates, *rate)
+		rates = append(rates, rate)
 	}
 
 	return rates, nil
