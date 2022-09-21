@@ -5,7 +5,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/sirupsen/logrus"
+	"github.com/juju/errors"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/currencies"
 )
 
@@ -14,13 +14,13 @@ func readResponse(resp *http.Response) (*currencies.Rate, error) {
 
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		logrus.Errorf("can't read response: %d", err)
+		return nil, errors.Errorf("can't read response: %d", err)
 	}
 
 	var cur currencies.Currency
 
 	if err := json.Unmarshal(respBody, &cur); err != nil {
-		logrus.Errorf("can't unmarshal body: %d", err)
+		return nil, errors.Errorf("can't unmarshal body: %d", err)
 	}
 
 	return &currencies.Rate{
