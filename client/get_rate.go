@@ -5,7 +5,6 @@ import (
 	"io"
 
 	"github.com/juju/errors"
-	"github.com/sirupsen/logrus"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/config"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/currencies"
 )
@@ -16,12 +15,12 @@ func (c *Client) GetRates(cfg *config.NBRB) ([]currencies.Rate, error) {
 	for code, flag := range currencies.CodesAndFlags {
 		req, err := getCurrency(cfg.OneRateURL, code)
 		if err != nil {
-			logrus.Errorf("bad news: %d", err)
+			return nil, errors.Errorf("bad news: %d", err)
 		}
 
 		resp, err := c.Bot.Client.Do(req)
 		if err != nil {
-			logrus.Errorf("can't Do request: %d", err)
+			return nil, errors.Errorf("can't Do request: %d", err)
 		}
 
 		respBody, err := io.ReadAll(resp.Body)

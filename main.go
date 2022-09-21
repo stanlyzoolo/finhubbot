@@ -37,7 +37,7 @@ func main() {
 		fmt.Println(err)
 	}
 
-	rates, err := tgClient.GetRates(urlNBRB)
+	rates, err := tgClient.GetRates(urlNBRB) // panic
 	if err != nil {
 		fmt.Println(err)
 	}
