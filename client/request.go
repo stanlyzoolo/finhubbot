@@ -11,7 +11,7 @@ import (
 
 // Формат запроса в НБ РБ:
 // https://www.nbrb.by/api/exrates/rates/840?parammode=1
-func getCurrency(url string, curID int) (*http.Request, error) {
+func getRequest(url string, curID int) (*http.Request, error) {
 	var body io.Reader
 
 	ctx := context.Background()

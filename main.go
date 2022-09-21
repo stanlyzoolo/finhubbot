@@ -7,6 +7,7 @@ import (
 	// TODO Использовать логгер: https://pkg.go.dev/github.com/go-telegram-bot-api/telegram-bot-api/v5#SetLogger
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/robfig/cron/v3"
 	"github.com/sirupsen/logrus"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/client"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/config"
@@ -36,25 +37,26 @@ func main() {
 	}
 
 	var msg messages.Summary
+
 	summary, err := msg.GenerateFromRates(rates)
 	if err != nil {
 		logrus.Error(err)
 	}
-	_, err = tgClient.Bot.Send(tgbotapi.NewMessage(int64(chatID), summary))
+
 	// Run cron schedule
-	// crn := cron.New()
-	// _, err = crn.AddFunc("@every 30s", func() {
-	// 	_, err = tgClient.Bot.Send(tgbotapi.NewMessage(int64(chatID), summary))
-	// 	if err != nil {
-	// 		logrus.Error(err)
-	// 	}
-	// })
+	crn := cron.New()
+	_, err = crn.AddFunc("@every 30s", func() {
+		_, err = tgClient.Bot.Send(tgbotapi.NewMessage(int64(chatID), summary))
+		if err != nil {
+			logrus.Error(err)
+		}
+	})
 
 	if err != nil {
 		logrus.Error(err)
 	}
 
-	// for {
-	// 	crn.Start()
-	// }
+	for {
+		crn.Start()
+	}
 }

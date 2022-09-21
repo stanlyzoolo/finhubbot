@@ -13,7 +13,7 @@ func (c *Client) GetRates(cfg *config.NBRB) ([]currencies.Rate, error) {
 	rates := make([]currencies.Rate, 0)
 
 	for code, flag := range currencies.CodesAndFlags {
-		req, err := getCurrency(cfg.OneRateURL, code)
+		req, err := getRequest(cfg.OneRateURL, code)
 		if err != nil {
 			return nil, errors.Errorf("bad news: %d", err)
 		}
