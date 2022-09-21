@@ -45,7 +45,7 @@ func main() {
 
 	// Run cron schedule
 	crn := cron.New()
-	_, err = crn.AddFunc("@every 1m", func() {
+	_, err = crn.AddFunc("@every 30s", func() {
 		_, err = tgClient.Bot.Send(tgbotapi.NewMessage(int64(chatID), summary))
 		if err != nil {
 			fmt.Println(err)
