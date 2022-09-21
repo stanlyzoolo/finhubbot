@@ -13,11 +13,12 @@ type NBRB struct {
 	OneRateURL  string
 }
 
-type BotToken struct {
-	Token string
+type Telegram struct {
+	APIkey string
+	ChatID string
 }
 
-func New() (*NBRB, *BotToken, error) {
+func New() (*NBRB, *Telegram, error) {
 	if err := godotenv.Load(); err != nil {
 		return nil, nil, errors.New("can't load .env file")
 	}
@@ -26,8 +27,9 @@ func New() (*NBRB, *BotToken, error) {
 			AllRatesURL: os.Getenv("AllRatesURL"),
 			OneRateURL:  os.Getenv("OneRateURL"),
 		},
-		&BotToken{
-			Token: os.Getenv("TGbotTOKEN"),
+		&Telegram{
+			APIkey: os.Getenv("TGbotTOKEN"),
+			ChatID: os.Getenv("ChatID"),
 		},
 		nil
 }

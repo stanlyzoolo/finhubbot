@@ -1,15 +1,25 @@
 package currencies
 
+type Currency struct {
+	ID           int64   `json:"Cur_ID"`           // внутренний код НЦ РБ
+	Abbreviation string  `json:"Cur_Abbreviation"` // буквенный код: USD
+	Name         string  `json:"Cur_Name"`         // наименование валюты на русском языке во множественном,
+	Scale        int64   `json:"Cur_Scale"`        // количество единиц валюты
+	OfficialRate float32 `json:"Cur_OfficialRate"` // курс
+	// Date         time.Time `json:"Date"` // Don`t need
+}
+
+// Коды валют по ИСО 4217
 const (
-	// Коды валют по ИСО 4217
-	USD = 431
+	USD = 840
 	EUR = 978
 	RUS = 643
 	CNY = 156
-
-	// Флаги в UTF-8
-	UnitedStates      = "\U0001F1FA\U0001F1F8"
-	EuropeanUnion     = "\U0001F1EA\U0001F1FA"
-	RussianFederation = "\U0001F1F7\U0001F1FA"
-	ChinaRepublic     = "\U0001F1E8\U0001F1F3"
 )
+
+var CodesAndFlags = map[int]string{
+	USD: UnitedStates,
+	EUR: EuropeanUnion,
+	RUS: RussianFederation,
+	CNY: ChinaRepublic,
+}
