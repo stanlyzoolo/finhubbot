@@ -3,6 +3,7 @@ package client
 import (
 	"encoding/json"
 	"io"
+	"net/http"
 
 	"github.com/juju/errors"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/config"
@@ -12,13 +13,15 @@ import (
 func (c *Client) GetRates(cfg *config.NBRB) ([]currencies.Rate, error) {
 	rates := make([]currencies.Rate, 0)
 
+	client := http.Client{}
+
 	for code, flag := range currencies.CodesAndFlags {
 		req, err := getRequest(cfg.OneRateURL, code)
 		if err != nil {
 			return nil, errors.Errorf("bad news: %d", err)
 		}
 
-		resp, err := c.Bot.Client.Do(req)
+		resp, err := client.Do(req)
 		if err != nil {
 			return nil, errors.Errorf("can't Do request: %s", err.Error())
 		}
