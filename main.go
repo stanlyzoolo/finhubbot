@@ -21,7 +21,7 @@ func main() {
 
 	cl := http.Client{}
 
-	req, err := http.NewRequest("GET", "www.onliner.by", reader)
+	req, err := http.NewRequest("GET", "https://www.onliner.by", reader)
 	if err != nil {
 		fmt.Println("Bad news for req")
 	}
