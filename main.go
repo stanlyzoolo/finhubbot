@@ -21,7 +21,7 @@ func main() {
 
 	cl := http.Client{}
 
-	req, err := http.NewRequest("GET", "https://www.onliner.by", reader)
+	req, err := http.NewRequest("GET", "https://www.nbrb.by/api/exrates/rates/643?parammode=1", reader)
 	if err != nil {
 		fmt.Println("Bad news for req")
 	}
@@ -69,7 +69,7 @@ func main() {
 
 	// Run cron schedule
 	crn := cron.New()
-	_, err = crn.AddFunc("@every 10s", func() {
+	_, err = crn.AddFunc("@every 1h", func() {
 		_, err = tgClient.Bot.Send(tgbotapi.NewMessage(int64(chatID), summary))
 		if err != nil {
 			logrus.Error(err)
