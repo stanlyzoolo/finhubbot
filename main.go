@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"io"
+	"net/http"
 	"strconv"
 
 	// TODO Использовать логгер: https://pkg.go.dev/github.com/go-telegram-bot-api/telegram-bot-api/v5#SetLogger
@@ -15,6 +17,29 @@ import (
 )
 
 func main() {
+	var reader io.Reader
+
+	cl := http.Client{}
+
+	req, err := http.NewRequest("GET", "www.onliner.by", reader)
+	if err != nil {
+		fmt.Println("Bad news for req")
+	}
+
+	resp, err := cl.Do(req)
+	if err != nil {
+		fmt.Println("Bad news for resp")
+	}
+
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("can't read body: %s", err.Error())
+	}
+
+	fmt.Println(string(respBody))
+
+	defer resp.Body.Close()
+
 	urlNBRB, telegram, err := config.New()
 	if err != nil {
 		logrus.Errorf("can't read config: %d", err)
