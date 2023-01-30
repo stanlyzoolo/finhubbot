@@ -1,18 +1,13 @@
-FROM heroku/heroku:20-build as build
+# syntax=docker/dockerfile:1
+
+FROM golang:1.19-alpine
+
+WORKDIR /app
 
 COPY . /app
-WORKDIR /app
 
-RUN mkdir -p /tmp/buildpack/heroku/go /tmp/build_cache /tmp/env
-RUN curl https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku/go.tgz | tar xz -C /tmp/buildpack/heroku/go
+RUN go mod download
 
-RUN STACK=heroku-20 /tmp/buildpack/heroku/go/bin/compile /app /tmp/build_cache /tmp/env
+RUN go build -o /smartLaFamiliaBot
 
-FROM heroku/heroku:20
-
-COPY --from=build /app /app
-ENV HOME /app
-WORKDIR /app
-RUN useradd -m heroku
-USER heroku
-CMD /app/bin/smartLaFamiliaBot
+CMD [ "/smartLaFamiliaBot" ]

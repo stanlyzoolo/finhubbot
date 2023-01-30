@@ -9,12 +9,14 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/robfig/cron/v3"
 	"github.com/sirupsen/logrus"
+
 	"github.com/stanlyzoolo/smartLaFamiliaBot/client"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/config"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/messages"
 )
 
 func main() {
+
 	urlNBRB, telegram, err := config.New()
 	if err != nil {
 		logrus.Errorf("can't read config: %d", err)

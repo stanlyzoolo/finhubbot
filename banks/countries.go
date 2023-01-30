@@ -1,11 +1,6 @@
-package currencies
+package countries
 
-type Rate struct {
-	Currency
-	CountryFlagUTF8 string
-}
-
-// Флаги в UTF-8
+// Флаги в UTF-8 для иконок валют
 const (
 	UnitedStates      = "\U0001F1FA\U0001F1F8"
 	EuropeanUnion     = "\U0001F1EA\U0001F1FA"

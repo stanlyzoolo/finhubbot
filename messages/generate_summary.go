@@ -9,10 +9,10 @@ import (
 
 	"github.com/juju/errors"
 
-	"github.com/stanlyzoolo/smartLaFamiliaBot/currencies"
+	"github.com/stanlyzoolo/smartLaFamiliaBot/banks/nacbank"
 )
 
-func (s *Summary) GenerateFromRates(rates []currencies.Rate) (string, error) {
+func (s *Summary) GenerateFromRates(rates []nacbank.Rate) (string, error) {
 	s.date = time.Now().Format("02.01.2006")
 	s.header = fmt.Sprintf("Курс Национального Банка РБ на %s.", s.date)
 

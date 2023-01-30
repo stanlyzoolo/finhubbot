@@ -1,10 +1,11 @@
 package config
 
 import (
-	"os"
-
 	"github.com/joho/godotenv"
 	"github.com/juju/errors"
+	// "golang.org/x/net/html"
+
+	"os"
 )
 
 // API НацБанка РБ
@@ -32,4 +33,8 @@ func New() (*NBRB, *Telegram, error) {
 			ChatID: os.Getenv("ChatID"),
 		},
 		nil
+}
+
+func htmlParse() {
+	// html.
 }

@@ -5,17 +5,19 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/juju/errors"
+	"github.com/stanlyzoolo/smartLaFamiliaBot/banks/nacbank"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/config"
-	"github.com/stanlyzoolo/smartLaFamiliaBot/currencies"
+
+	// TODO Переделать на fmt пакет
+	"github.com/juju/errors"
 )
 
-func (c *Client) GetRates(cfg *config.NBRB) ([]currencies.Rate, error) {
-	rates := make([]currencies.Rate, 0)
+func (c *Client) GetRates(cfg *config.NBRB) ([]nacbank.Rate, error) {
+	rates := make([]nacbank.Rate, 0)
 
 	client := http.Client{}
 
-	for code, flag := range currencies.CodesAndFlags {
+	for code, flag := range nacbank.CodesAndFlags {
 		req, err := getRequest(cfg.OneRateURL, code)
 		if err != nil {
 			return nil, errors.Errorf("bad news: %d", err)
@@ -33,7 +35,7 @@ func (c *Client) GetRates(cfg *config.NBRB) ([]currencies.Rate, error) {
 
 		defer resp.Body.Close()
 
-		var rate currencies.Rate
+		var rate nacbank.Rate
 
 		if err := json.Unmarshal(respBody, &rate); err != nil {
 			return nil, errors.Errorf("can't unmarshal body: %d", err)

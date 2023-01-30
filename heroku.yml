@@ -1,6 +1,0 @@
-build:
-  docker:
-    app: Dockerfile
-
-run:
-  app: bin/smartLaFamiliaBot
