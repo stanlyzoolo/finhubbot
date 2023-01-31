@@ -1,17 +1,30 @@
 package commercial
 
-type USD struct {
-	Buying, Selling string
-}
+type (
+	Rate struct {
+		Bank             *Bank
+		USD              *USD
+		EUR              *EUR
+		RUB              *RUB
+		ConvFromEURtoUSD *ConvFromEURtoUSD
+	}
+	Bank struct {
+		Name string
+	}
 
-type EUR struct {
-	Buying, Selling string
-}
+	USD struct {
+		Buying, Selling string
+	}
 
-type RUB struct {
-	Buying, Selling string
-}
+	EUR struct {
+		Buying, Selling string
+	}
 
-type Bank struct {
-	Name string
-}
+	RUB struct {
+		Buying, Selling string
+	}
+
+	ConvFromEURtoUSD struct {
+		Value string
+	}
+)

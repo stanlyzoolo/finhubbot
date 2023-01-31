@@ -3,7 +3,7 @@ package nacbank
 import (
 	"time"
 
-	"github.com/smartLaFamiliaBot/banks/countries"
+	"github.com/stanlyzoolo/smartLaFamiliaBot/banks/countries"
 )
 
 type Rate struct {
