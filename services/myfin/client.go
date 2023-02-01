@@ -9,10 +9,10 @@ import (
 	"github.com/gocolly/colly"
 )
 
-type Service interface {
+type Myfin interface {
 	SetAllowedDomain(domain string)
 	ScrapDomain() []string
-	OrderIncomingData(raw []string, must []string) (ordered []BankCurrencies)
+	OrderIncomingData(in []string) (ordered []BankCurrencies)
 }
 
 type service struct {
@@ -33,7 +33,7 @@ type BankCurrencies struct {
 	EURtoUSDselling string
 }
 
-func New(log *log.Logger, cfg *config.Config) Service {
+func New(log *log.Logger, cfg *config.Config) Myfin {
 	return &service{
 		c:   colly.NewCollector(),
 		log: log,
@@ -63,8 +63,8 @@ func (s *service) ScrapDomain() (banks []string) {
 	return
 }
 
-func (s *service) OrderIncomingData(raw []string, must []string) (ordered []BankCurrencies) {
-	ordered = orderBanksDetails(raw)
+func (s *service) OrderIncomingData(in []string) (ordered []BankCurrencies) {
+	ordered = orderBanksDetails(in)
 
 	return
 }

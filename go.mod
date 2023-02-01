@@ -29,6 +29,7 @@ require (
 
 require (
 	github.com/gocolly/colly v1.2.0
+	github.com/robfig/cron/v3 v3.0.1
 	go.uber.org/fx v1.19.1
 	go.uber.org/zap v1.24.0
 	golang.org/x/net v0.5.0 // indirect; indirect; indirect // indirect
