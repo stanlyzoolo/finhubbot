@@ -73,7 +73,7 @@ func (s *service) ScrapDomain() ([]string, error) {
 		s.log.Infof("Visiting: %s", r.URL.String())
 	})
 
-	// TODO разобраться почему посетить ресурс можно только один раз
+	// флаг повторного посещения ресурса
 	s.c.AllowURLRevisit = true
 
 	err := s.c.Visit(s.cfg.MyFin.URL)
