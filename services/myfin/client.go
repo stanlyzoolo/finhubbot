@@ -10,8 +10,8 @@ import (
 )
 
 type Myfin interface {
-	SetAllowedDomain(domain string)
-	ScrapDomain() []string
+	SetAllowedDomain() error
+	ScrapDomain() ([]string, error)
 	OrderIncomingData(in []string) (ordered []BankCurrencies)
 }
 
@@ -41,17 +41,26 @@ func New(log *log.Logger, cfg *config.Config) Myfin {
 	}
 }
 
-func (s *service) SetAllowedDomain(domain string) {
-	s.log.Infof("Set domain: %s", domain)
+func (s *service) SetAllowedDomain() error {
+	domain := s.cfg.MyFin.AllowedDomain
+	url := s.cfg.MyFin.URL
+
+	if domain == "" || url == "" {
+		return fmt.Errorf("allowed domain and url are not set in env's")
+	}
 
 	s.c.AllowedDomains = []string{domain}
+	s.cfg.MyFin.URL = url
+
+	s.log.Infof("current config for MyFin: %s, %s", domain, url)
+
+	return nil
 }
 
-func (s *service) ScrapDomain() (banks []string) {
-	// TODO возможно так не будет работать
-	// banks = make([]string, 0)
+func (s *service) ScrapDomain() ([]string, error) {
+	banks := make([]string, 0)
 
-	// Все банки
+	// Все коммерческие банки
 	s.c.OnHTML(`tbody[class="sort_body"]`, func(h *colly.HTMLElement) {
 		h.ForEach(`tr[class="c-currency-table__main-row c-currency-table__main-row--with-arrow"]`, func(i int, h *colly.HTMLElement) {
 			h.ForEach("td", func(i int, h *colly.HTMLElement) {
@@ -60,7 +69,21 @@ func (s *service) ScrapDomain() (banks []string) {
 		})
 	})
 
-	return
+	s.c.OnRequest(func(r *colly.Request) {
+		s.log.Infof("Visiting: %s", r.URL.String())
+	})
+
+	// TODO разобраться почему посетить ресурс можно только один раз
+	s.c.AllowURLRevisit = true
+
+	err := s.c.Visit(s.cfg.MyFin.URL)
+	if err != nil {
+		s.log.Errorf("can't visit filled url: %v", err)
+
+		return nil, err
+	}
+
+	return banks, nil
 }
 
 func (s *service) OrderIncomingData(in []string) (ordered []BankCurrencies) {
@@ -90,11 +113,7 @@ func orderBanksDetails(raw []string) []BankCurrencies {
 		bank.EURtoUSDbuying = raw[7]
 		bank.EURtoUSDselling = raw[8]
 
-		fmt.Printf("Ready bank info: %+v\n", bank)
-
 		raw = raw[9:]
-
-		fmt.Println("Next iteration")
 
 		banks = append(banks, bank)
 	}

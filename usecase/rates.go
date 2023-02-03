@@ -2,42 +2,90 @@ package usecase
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"github.com/stanlyzoolo/smartLaFamiliaBot/log"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/messages"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/services"
 
-	"github.com/robfig/cron/v3"
+	"go.uber.org/fx"
 )
 
-type Service interface {
-	GenerateNatBankRatesInfo() (string, error)
-	RunByCron() error
-}
+// type Service interface {
+// 	GenerateNatBankRatesInfo(ctx context.Context) (string, error)
+// 	RunByCron(ctx context.Context) error
+// }
 
-type service struct {
+type Service struct {
 	log     *log.Logger
 	clients services.Composite
 }
 
-func New(log *log.Logger, clients services.Composite) Service {
-	return &service{
+func New(lc fx.Lifecycle, log *log.Logger, clients services.Composite) *Service {
+	srv := &Service{
 		log:     log,
 		clients: clients,
 	}
+
+	srvCtx := context.Background()
+
+	lc.Append(fx.Hook{
+		OnStart: func(srvCtx context.Context) error {
+			go func() {
+				err := srv.RunByCron(srvCtx)
+				srv.log.Error(err)
+			}()
+
+			return nil
+		},
+
+		OnStop: func(_ context.Context) error {
+			srvCtx.Done()
+
+			return nil
+		},
+	})
+
+	return srv
 }
 
-func (srv *service) GenerateNatBankRatesInfo() (string, error) {
-	rates, err := srv.clients.NatBank().GetRates(context.Background())
+func (srv *Service) RunByCron(ctx context.Context) error {
+	summary, err := srv.GenerateNatBankRatesInfo(ctx)
 	if err != nil {
-		srv.log.Errorf("can't rates from National Bank: %w", err)
+		srv.log.Error(err)
+
+		return err
+	}
+
+	t := time.NewTicker(time.Second * 10)
+
+	for range t.C {
+		err = srv.clients.TelBot().SendMessage(summary)
+		if err != nil {
+			srv.log.Error(err)
+
+			return err
+		}
+
+		// TODO инфа приходит - написать комбайн для сообщения в телегу
+		_, err = srv.GenerateCommercialBanksInfo(ctx)
+	}
+
+	return err
+}
+
+func (srv *Service) GenerateNatBankRatesInfo(ctx context.Context) (string, error) {
+	rates, err := srv.clients.NatBank().GetRates(ctx)
+	if err != nil {
+		srv.log.Errorf("can't rates from National Bank: %v", err)
 
 		return "", nil
 	}
 
-	ready, err := messages.GenerateFromNatBankRates(rates)
+	ready, err := messages.GenerateSummaryFromNatBank(rates)
 	if err != nil {
-		srv.log.Errorf("can't construct summary from rates: %w", err)
+		srv.log.Errorf("can't construct summary from rates: %v", err)
 
 		return "", nil
 	}
@@ -45,27 +93,23 @@ func (srv *service) GenerateNatBankRatesInfo() (string, error) {
 	return ready, err
 }
 
-// TODO Доделать и запустить
-func (srv *service) RunByCron() error {
-	summary, err := srv.GenerateNatBankRatesInfo()
+func (srv *Service) GenerateCommercialBanksInfo(ctx context.Context) (string, error) {
+	if err := srv.clients.MyFin().SetAllowedDomain(); err != nil {
+		srv.log.Errorf("can't set allowed domain: %v", err)
+
+		return "", fmt.Errorf("can't set allowed domain: %v", err)
+	}
+
+	commercilaRates, err := srv.clients.MyFin().ScrapDomain()
 	if err != nil {
-		srv.log.Error(err)
+		srv.log.Errorf("can't scrap commercial rates from established domain: %v", err)
 
-		return err
+		return "", fmt.Errorf("can't scrap commercial rates from established domain: %v", err)
 	}
 
-	// Run cron schedule
-	crn := cron.New()
-	_, err = crn.AddFunc("@every 10s", func() {
-		err = srv.clients.TelBot().SendMessage(summary)
-		if err != nil {
-			srv.log.Error(err)
-		}
-	})
+	ordered := srv.clients.MyFin().OrderIncomingData(commercilaRates)
 
-	for {
-		crn.Start()
-	}
+	srv.log.Infof("commercial rates:\n %v", ordered)
 
-	return nil
+	return "", nil
 }

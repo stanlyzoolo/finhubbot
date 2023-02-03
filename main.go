@@ -5,6 +5,7 @@ import (
 
 	"github.com/stanlyzoolo/smartLaFamiliaBot/config"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/log"
+	"github.com/stanlyzoolo/smartLaFamiliaBot/services"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/services/myfin"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/services/nacbank"
 	bot "github.com/stanlyzoolo/smartLaFamiliaBot/services/telegram"
@@ -25,16 +26,20 @@ func main() {
 	}
 
 	app := fx.New(
-		fx.NopLogger,
+		// fx.NopLogger,
 		fx.Supply(logger, cfg),
 		fx.Provide(
 			bot.New,
 			myfin.New,
 			nacbank.New,
 			usecase.New,
+			services.New,
 		),
+		fx.Invoke(func(
+			_ *usecase.Service,
+		) {
+		}),
 	)
 
-	fmt.Println("started")
 	app.Run()
 }

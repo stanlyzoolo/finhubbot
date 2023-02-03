@@ -34,34 +34,34 @@ func New() (*Config, error) {
 	// MyFin
 	allowedDomain, ok := os.LookupEnv("ALLOWED_DOMAIN")
 	if !ok || len(allowedDomain) == 0 {
-		return nil, fmt.Errorf("ALLOWED_DOMAIN: %w", ErrEmptyEnvVariable)
+		return nil, fmt.Errorf("ALLOWED_DOMAIN: %v", ErrEmptyEnvVariable)
 	}
 
 	url, ok := os.LookupEnv("MYFIN_URL")
 	if !ok || len(url) == 0 {
-		return nil, fmt.Errorf("MYFIN_URL: %w", ErrEmptyEnvVariable)
+		return nil, fmt.Errorf("MYFIN_URL: %v", ErrEmptyEnvVariable)
 	}
 
 	// NBRB
 	allRatesURL, ok := os.LookupEnv("ALL_RATES_URL")
 	if !ok || len(allRatesURL) == 0 {
-		return nil, fmt.Errorf("ALL_RATES_URL: %w", ErrEmptyEnvVariable)
+		return nil, fmt.Errorf("ALL_RATES_URL: %v", ErrEmptyEnvVariable)
 	}
 
 	oneRateURL, ok := os.LookupEnv("ONE_RATE_URL")
 	if !ok || len(oneRateURL) == 0 {
-		return nil, fmt.Errorf("ONE_RATE_URL: %w", ErrEmptyEnvVariable)
+		return nil, fmt.Errorf("ONE_RATE_URL: %v", ErrEmptyEnvVariable)
 	}
 
 	// Telegram
 	apiKey, ok := os.LookupEnv("TG_TOKEN")
 	if !ok || len(apiKey) == 0 {
-		return nil, fmt.Errorf("TG_TOKEN: %w", ErrEmptyEnvVariable)
+		return nil, fmt.Errorf("TG_TOKEN: %v", ErrEmptyEnvVariable)
 	}
 
 	chatID, ok := os.LookupEnv("CHAT_ID")
 	if !ok || len(chatID) == 0 {
-		return nil, fmt.Errorf("CHAT_ID: %w", ErrEmptyEnvVariable)
+		return nil, fmt.Errorf("CHAT_ID: %v", ErrEmptyEnvVariable)
 	}
 
 	return &Config{

@@ -23,7 +23,7 @@ type bot struct {
 func New(log *log.Logger, cfg *config.Config) (Bot, error) {
 	botAPI, err := tgAPI.NewBotAPI(cfg.Telegram.APIkey)
 	if err != nil {
-		return nil, fmt.Errorf("can't initialize bot: %w", err)
+		return nil, fmt.Errorf("can't initialize bot: %v", err)
 	}
 
 	return &bot{
@@ -36,7 +36,7 @@ func New(log *log.Logger, cfg *config.Config) (Bot, error) {
 func (b *bot) SendMessage(summary string) error {
 	chatID, err := strconv.ParseInt(b.cfg.Telegram.ChatID, 10, 64)
 	if err != nil {
-		b.log.Errorf("can't parse chatID from env to int64: %w", err)
+		b.log.Errorf("can't parse chatID from env to int64: %v", err)
 
 		return err
 	}

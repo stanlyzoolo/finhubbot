@@ -13,7 +13,7 @@ type Logger struct {
 func New() (*Logger, error) {
 	instance, err := zap.NewDevelopment()
 	if err != nil {
-		return nil, fmt.Errorf("can't initialize logger: %w", err)
+		return nil, fmt.Errorf("can't initialize logger: %v", err)
 	}
 
 	return &Logger{
