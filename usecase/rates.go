@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/stanlyzoolo/smartLaFamiliaBot/log"
@@ -51,12 +52,21 @@ func New(lc fx.Lifecycle, log *log.Logger, clients services.Composite) *Service 
 }
 
 func (srv *Service) RunByCron(ctx context.Context) error {
-	summary, err := srv.GenerateNatBankRatesInfo(ctx)
+	nat, err := srv.GenerateNatBankRatesInfo(ctx)
 	if err != nil {
 		srv.log.Error(err)
 
 		return err
 	}
+
+	com, err := srv.GenerateCommercialBanksInfo(ctx)
+	if err != nil {
+		srv.log.Error(err)
+
+		return err
+	}
+
+	summary := strings.Join([]string{nat, com}, "\n")
 
 	t := time.NewTicker(time.Second * 10)
 
@@ -67,9 +77,6 @@ func (srv *Service) RunByCron(ctx context.Context) error {
 
 			return err
 		}
-
-		// TODO инфа приходит - написать комбайн для сообщения в телегу
-		_, err = srv.GenerateCommercialBanksInfo(ctx)
 	}
 
 	return err
@@ -80,14 +87,14 @@ func (srv *Service) GenerateNatBankRatesInfo(ctx context.Context) (string, error
 	if err != nil {
 		srv.log.Errorf("can't rates from National Bank: %v", err)
 
-		return "", nil
+		return "", err
 	}
 
-	ready, err := messages.GenerateSummaryFromNatBank(rates)
+	ready, err := messages.GenerateSummaryForNatBank(rates)
 	if err != nil {
 		srv.log.Errorf("can't construct summary from rates: %v", err)
 
-		return "", nil
+		return "", err
 	}
 
 	return ready, err
@@ -111,5 +118,12 @@ func (srv *Service) GenerateCommercialBanksInfo(ctx context.Context) (string, er
 
 	srv.log.Infof("commercial rates:\n %v", ordered)
 
-	return "", nil
+	ready, err := messages.GenerateSummaryForCommercialBanks(ordered)
+	if err != nil {
+		srv.log.Errorf("can't construct summary from rates: %v", err)
+
+		return "", err
+	}
+
+	return ready, err
 }

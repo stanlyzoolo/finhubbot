@@ -2,29 +2,29 @@ package commercial
 
 type (
 	Rate struct {
-		Bank             *Bank
-		USD              *USD
-		EUR              *EUR
-		RUB              *RUB
-		ConvFromEURtoUSD *ConvFromEURtoUSD
+		Bank             Bank
+		USD              USD
+		EUR              EUR
+		RUB              RUB
+		ConvFromEURtoUSD ConvFromEURtoUSD
 	}
 	Bank struct {
 		Name string
 	}
 
 	USD struct {
-		Buying, Selling string
+		Flag, Buying, Selling string
 	}
 
 	EUR struct {
-		Buying, Selling string
+		Flag, Buying, Selling string
 	}
 
 	RUB struct {
-		Buying, Selling string
+		Flag, Buying, Selling string
 	}
 
 	ConvFromEURtoUSD struct {
-		Value string
+		Buying, Selling string
 	}
 )

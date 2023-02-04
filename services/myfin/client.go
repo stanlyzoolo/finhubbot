@@ -12,7 +12,7 @@ import (
 type Myfin interface {
 	SetAllowedDomain() error
 	ScrapDomain() ([]string, error)
-	OrderIncomingData(in []string) (ordered []BankCurrencies)
+	OrderIncomingData(in []string) (ordered []Currencies)
 }
 
 type service struct {
@@ -21,8 +21,8 @@ type service struct {
 	cfg *config.Config
 }
 
-type BankCurrencies struct {
-	Bank            string
+type Currencies struct {
+	BankName        string
 	USDbuying       string
 	USDselling      string
 	EURbuying       string
@@ -86,16 +86,16 @@ func (s *service) ScrapDomain() ([]string, error) {
 	return banks, nil
 }
 
-func (s *service) OrderIncomingData(in []string) (ordered []BankCurrencies) {
+func (s *service) OrderIncomingData(in []string) (ordered []Currencies) {
 	ordered = orderBanksDetails(in)
 
 	return
 }
 
-func orderBanksDetails(raw []string) []BankCurrencies {
+func orderBanksDetails(raw []string) []Currencies {
 	var (
-		bank  BankCurrencies
-		banks []BankCurrencies
+		bank  Currencies
+		banks []Currencies
 	)
 
 	for {
@@ -103,7 +103,7 @@ func orderBanksDetails(raw []string) []BankCurrencies {
 			break
 		}
 
-		bank.Bank = raw[0]
+		bank.BankName = raw[0]
 		bank.USDbuying = raw[1]
 		bank.USDselling = raw[2]
 		bank.EURbuying = raw[3]
@@ -120,29 +120,3 @@ func orderBanksDetails(raw []string) []BankCurrencies {
 
 	return banks
 }
-
-// func sh() {
-// 	bank := make([]string, 0)
-
-// 	c := colly.NewCollector(colly.AllowedDomains("myfin.by"))
-
-// 	// bankDetails := c.Clone()
-// 	// Все банки
-// 	c.OnHTML(`tbody[class="sort_body"]`, func(h *colly.HTMLElement) {
-// 		h.ForEach(`tr[class="c-currency-table__main-row c-currency-table__main-row--with-arrow"]`, func(i int, h *colly.HTMLElement) {
-// 			h.ForEach("td", func(i int, h *colly.HTMLElement) {
-// 				bank = append(bank, h.Text)
-// 			})
-// 		})
-// 	})
-
-// 	c.OnRequest(func(r *colly.Request) {
-// 		log.Println("Visiting: ", r.URL.String())
-// 	})
-
-// 	if err := c.Visit("https://myfin.by/currency/minsk"); err != nil {
-// 		fmt.Println(err)
-// 	}
-
-// 	fmt.Println(orderBanksDetails(bank))
-// }
