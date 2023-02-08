@@ -9,8 +9,10 @@ import (
 	"github.com/stanlyzoolo/smartLaFamiliaBot/services/myfin"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/services/nacbank"
 	bot "github.com/stanlyzoolo/smartLaFamiliaBot/services/telegram"
+	"github.com/stanlyzoolo/smartLaFamiliaBot/storage"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/usecase"
 
+	_ "github.com/mattn/go-sqlite3"
 	"go.uber.org/fx"
 )
 
@@ -34,7 +36,9 @@ func main() {
 			nacbank.New,
 			usecase.New,
 			services.New,
+			storage.New,
 		),
+		storage.Construct(),
 		fx.Invoke(func(
 			_ *usecase.Service,
 		) {

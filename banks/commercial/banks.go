@@ -13,18 +13,21 @@ type (
 	}
 
 	USD struct {
-		Flag, Buying, Selling string
+		Flag            string
+		Buying, Selling float32
 	}
 
 	EUR struct {
-		Flag, Buying, Selling string
+		Flag            string
+		Buying, Selling float32
 	}
 
 	RUB struct {
-		Flag, Buying, Selling string
+		Flag            string
+		Buying, Selling float32
 	}
 
 	ConvFromEURtoUSD struct {
-		Buying, Selling string
+		Buying, Selling float32
 	}
 )

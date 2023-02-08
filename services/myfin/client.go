@@ -92,6 +92,7 @@ func (s *service) OrderIncomingData(in []string) (ordered []Currencies) {
 	return
 }
 
+// TODO подумать как это отрефакторить по человечески
 func orderBanksDetails(raw []string) []Currencies {
 	var (
 		bank  Currencies

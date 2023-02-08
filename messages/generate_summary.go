@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
+	"strconv"
 	"strings"
 	"time"
 
@@ -43,31 +44,35 @@ func GenerateSummaryForNatBank(rates []nacbank.Rate) (string, error) {
 	return fmt.Sprint(header, strings.Join(report, "")), nil
 }
 
-func GenerateSummaryForCommercialBanks(rates []myfin.Currencies) (string, error) {
-	header := fmt.Sprint("Курс коммерческих банков по данным Myfin.by\n")
+func GenerateSummaryForCommercialBanks(rates []myfin.Currencies) ([]commercial.Rate, string, error) {
+	header := fmt.Sprint("Курс коммерческих банков Минска по данным Myfin.by\n")
 
 	report := make([]string, len(rates))
 
 	c := commercial.Rate{}
+
 	var b bytes.Buffer
+	comRates := make([]commercial.Rate, 0)
 
 	for i, rate := range rates {
 		c.Bank.Name = rate.BankName
 		c.USD.Flag = countries.UnitedStates
-		c.USD.Buying = rate.USDbuying
-		c.USD.Selling = rate.USDselling
+		c.USD.Buying = toFloat32(rate.USDbuying)
+		c.USD.Selling = toFloat32(rate.USDselling)
 		c.EUR.Flag = countries.EuropeanUnion
-		c.EUR.Buying = rate.EURbuying
-		c.EUR.Selling = rate.EURselling
+		c.EUR.Buying = toFloat32(rate.EURbuying)
+		c.EUR.Selling = toFloat32(rate.EURselling)
 		c.RUB.Flag = countries.RussianFederation
-		c.RUB.Buying = rate.RUBbuying
-		c.RUB.Selling = rate.RUBselling
-		c.ConvFromEURtoUSD.Buying = rate.EURtoUSDbuying
-		c.ConvFromEURtoUSD.Selling = rate.EURtoUSDselling
+		c.RUB.Buying = toFloat32(rate.RUBbuying)
+		c.RUB.Selling = toFloat32(rate.RUBselling)
+		c.ConvFromEURtoUSD.Buying = toFloat32(rate.EURtoUSDbuying)
+		c.ConvFromEURtoUSD.Selling = toFloat32(rate.EURtoUSDselling)
+
+		comRates = append(comRates, c)
 
 		t := template.Must(template.New("Commercial").Parse(Commercial))
 		if err := t.Execute(&b, c); err != nil {
-			return "", fmt.Errorf("can't execute parsing data into template: %w", err)
+			return nil, "", fmt.Errorf("can't execute parsing data into template: %w", err)
 		}
 
 		report[i] = b.String()
@@ -75,5 +80,15 @@ func GenerateSummaryForCommercialBanks(rates []myfin.Currencies) (string, error)
 		b.Reset()
 	}
 
-	return fmt.Sprint(header, strings.Join(report, "")), nil
+	return comRates, fmt.Sprint(header, strings.Join(report, "")), nil
+}
+
+func toFloat32(s string) float32 {
+	f, err := strconv.ParseFloat(s, 32)
+
+	if err != nil {
+		return 0
+	}
+
+	return float32(f)
 }

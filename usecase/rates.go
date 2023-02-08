@@ -6,9 +6,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/stanlyzoolo/smartLaFamiliaBot/banks/commercial"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/log"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/messages"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/services"
+	"github.com/stanlyzoolo/smartLaFamiliaBot/storage"
 
 	"go.uber.org/fx"
 )
@@ -21,12 +23,14 @@ import (
 type Service struct {
 	log     *log.Logger
 	clients services.Composite
+	storage storage.Storage
 }
 
-func New(lc fx.Lifecycle, log *log.Logger, clients services.Composite) *Service {
+func New(lc fx.Lifecycle, log *log.Logger, clients services.Composite, storage storage.Storage) *Service {
 	srv := &Service{
 		log:     log,
 		clients: clients,
+		storage: storage,
 	}
 
 	srvCtx := context.Background()
@@ -59,17 +63,19 @@ func (srv *Service) RunByCron(ctx context.Context) error {
 		return err
 	}
 
-	com, err := srv.GenerateCommercialBanksInfo(ctx)
+	rates, com, err := srv.GenerateCommercialBanksInfo(ctx)
 	if err != nil {
 		srv.log.Error(err)
 
 		return err
 	}
 
-	summary := strings.Join([]string{nat, com}, "\n")
+	summary := strings.Join([]string{nat, com}, "\n\n")
 
 	t := time.NewTicker(time.Second * 10)
 
+	// TODO Логика Сбора данных, сохранения в базу и отправка сообщения не согласуется между собой
+	// TODO и требует глобального пересмотра после добавления новых фич
 	for range t.C {
 		err = srv.clients.TelBot().SendMessage(summary)
 		if err != nil {
@@ -77,6 +83,13 @@ func (srv *Service) RunByCron(ctx context.Context) error {
 
 			return err
 		}
+
+		for _, r := range rates {
+			if err = srv.storage.Commercials().Create(ctx, r); err != nil {
+				return err
+			}
+		}
+
 	}
 
 	return err
@@ -100,30 +113,30 @@ func (srv *Service) GenerateNatBankRatesInfo(ctx context.Context) (string, error
 	return ready, err
 }
 
-func (srv *Service) GenerateCommercialBanksInfo(ctx context.Context) (string, error) {
+func (srv *Service) GenerateCommercialBanksInfo(ctx context.Context) ([]commercial.Rate, string, error) {
 	if err := srv.clients.MyFin().SetAllowedDomain(); err != nil {
 		srv.log.Errorf("can't set allowed domain: %v", err)
 
-		return "", fmt.Errorf("can't set allowed domain: %v", err)
+		return nil, "", fmt.Errorf("can't set allowed domain: %v", err)
 	}
 
 	commercilaRates, err := srv.clients.MyFin().ScrapDomain()
 	if err != nil {
 		srv.log.Errorf("can't scrap commercial rates from established domain: %v", err)
 
-		return "", fmt.Errorf("can't scrap commercial rates from established domain: %v", err)
+		return nil, "", fmt.Errorf("can't scrap commercial rates from established domain: %v", err)
 	}
 
 	ordered := srv.clients.MyFin().OrderIncomingData(commercilaRates)
 
 	srv.log.Infof("commercial rates:\n %v", ordered)
 
-	ready, err := messages.GenerateSummaryForCommercialBanks(ordered)
+	rates, ready, err := messages.GenerateSummaryForCommercialBanks(ordered)
 	if err != nil {
 		srv.log.Errorf("can't construct summary from rates: %v", err)
 
-		return "", err
+		return nil, "", err
 	}
 
-	return ready, err
+	return rates, ready, err
 }
