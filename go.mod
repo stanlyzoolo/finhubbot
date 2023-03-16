@@ -25,6 +25,7 @@ require (
 
 require (
 	github.com/gocolly/colly v1.2.0
+	github.com/golang-migrate/migrate v3.5.4+incompatible
 	github.com/mattn/go-sqlite3 v1.14.16
 	go.uber.org/fx v1.19.1
 	go.uber.org/zap v1.24.0

@@ -1,3 +1,2 @@
 # smartLaFamiliaBot
 
-smartLaFamiliaBot

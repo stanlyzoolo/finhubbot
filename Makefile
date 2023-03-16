@@ -1,3 +1,3 @@
 .PHONY: generate
 generate: ## Кодогенерация
-	go generate ./... ## TODO 
+	go generate ./...

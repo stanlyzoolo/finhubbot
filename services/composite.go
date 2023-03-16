@@ -7,19 +7,19 @@ import (
 )
 
 type Composite interface {
-	MyFin() myfin.Myfin
+	MyFin() myfin.Service
 	NatBank() nacbank.NBRB
 	TelBot() telegram.Bot
 }
 
 type composite struct {
-	Myfin    myfin.Myfin
+	Myfin    myfin.Service
 	NBRB     nacbank.NBRB
 	Telegram telegram.Bot
 }
 
 // MyFin implements Composite
-func (c *composite) MyFin() myfin.Myfin {
+func (c *composite) MyFin() myfin.Service {
 	return c.Myfin
 }
 
@@ -33,7 +33,7 @@ func (c *composite) TelBot() telegram.Bot {
 	return c.Telegram
 }
 
-func New(useMyfin myfin.Myfin, useNBRB nacbank.NBRB, useBot telegram.Bot) Composite {
+func New(useMyfin myfin.Service, useNBRB nacbank.NBRB, useBot telegram.Bot) Composite {
 	return &composite{
 		Myfin:    useMyfin,
 		NBRB:     useNBRB,
