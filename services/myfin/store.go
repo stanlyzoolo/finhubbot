@@ -53,10 +53,10 @@ func orderBanksDetails(raw []string) []Currency {
 	return banks
 }
 
-func (s *service) mapToRateModel(currencies []Currency) []dbo.Rate {
-	dboRates := make([]dbo.Rate, len(currencies))
+func (s *service) mapToRateModel(currencies []Currency) []dbo.CommercialRate {
+	dboRates := make([]dbo.CommercialRate, len(currencies))
 
-	dboRate := dbo.Rate{}
+	dboRate := dbo.CommercialRate{}
 	for i, c := range currencies {
 		dboRate.Bank.Name = sql.NullString{
 			String: c.Bank.Name,

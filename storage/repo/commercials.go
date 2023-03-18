@@ -12,7 +12,7 @@ import (
 )
 
 type Commercials interface {
-	Create(ctx context.Context, dbo dbo.Rate) error
+	Create(ctx context.Context, dbo dbo.CommercialRate) error
 }
 
 type commercials struct {
@@ -27,7 +27,8 @@ func NewCommercials(db *sql.DB, log *log.Logger) Commercials {
 	}
 }
 
-func (c *commercials) Create(ctx context.Context, dbo dbo.Rate) error {
+// TODO Может всё таки возвращать ID --> returning id
+func (c *commercials) Create(ctx context.Context, dbo dbo.CommercialRate) error {
 	q := `insert into commercials (bank, usd_in, usd_out, euro_in, euro_out, rub_in, rub_out, date) 
 	values ($1, $2, $3, $4, $5, $6, $7, $8)`
 
