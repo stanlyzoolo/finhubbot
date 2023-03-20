@@ -1,4 +1,4 @@
-package nacbank
+package natbank
 
 type Rate struct {
 	Currency

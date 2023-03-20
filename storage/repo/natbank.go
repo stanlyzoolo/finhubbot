@@ -27,10 +27,10 @@ func NewNBRB(db *sql.DB, log *log.Logger) NatBankRB {
 }
 
 func (n *natBankRB) Create(ctx context.Context, dbo dbo.NatBankRate) error {
-	q := `insert into nacbank (nat_id, abbreviation, name, scale, official_rate) 
+	q := `insert into nat_bank (nat_id, abbreviation, name, scale, official_rate) 
 	values ($1, $2, $3, $4, $5)`
 
-	_, err := n.db.ExecContext(ctx, q, dbo.ID, dbo.Abbreviation, dbo.Name, dbo.Scale, dbo.OfficialRate)
+	_, err := n.db.ExecContext(ctx, q, dbo.ID, dbo.Abbreviation.String, dbo.Name.String, dbo.Scale, dbo.OfficialRate)
 	if err != nil {
 		return err
 	}

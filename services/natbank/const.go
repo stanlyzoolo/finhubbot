@@ -1,4 +1,4 @@
-package nacbank
+package natbank
 
 type CodeByISO4217 int
 type DigitModeByISO4217 int
@@ -21,7 +21,7 @@ const (
 	ChinaRepublic     UTFCountryIcon = "\U0001F1E8\U0001F1F3"
 )
 
-var CodesAndFlags = map[CodeByISO4217]UTFCountryIcon{
+var codesAndFlags = map[CodeByISO4217]UTFCountryIcon{
 	USD: UnitedStates,
 	EUR: EuropeanUnion,
 	RUB: RussianFederation,

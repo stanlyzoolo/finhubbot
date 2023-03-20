@@ -32,7 +32,6 @@ func (s *service) run(t *time.Ticker, delay, every time.Duration, iterations int
 
 			if allowedWeekdays.Has(today) {
 				for i := 1; i <= iterations; i++ {
-					// Myfin
 					raw, err := s.scrapDomain()
 					if err != nil {
 						s.log.Error(err)

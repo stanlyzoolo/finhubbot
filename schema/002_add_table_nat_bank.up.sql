@@ -1,8 +1,8 @@
-create table if not exists nacbank (
+create table if not exists nat_bank (
     id integer primary key,
-    cur_id bigint,
+    nat_id int,
     abbreviation text,
     name text,
     scale int,
-    rate float
+    official_rate float
 );

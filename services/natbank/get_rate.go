@@ -1,4 +1,4 @@
-package nacbank
+package natbank
 
 import (
 	"context"
@@ -7,11 +7,11 @@ import (
 	"io"
 )
 
-func (c *client) GetCurrencyRate(ctx context.Context) ([]Rate, error) {
+func (c *service) getCurrenciesRates(ctx context.Context) ([]Rate, error) {
 	// TODO потому что валют всего 3
 	rates := make([]Rate, 0)
 
-	for code, flag := range CodesAndFlags {
+	for code, flag := range codesAndFlags {
 		req, err := preparetRequest(ctx, c.cfg.NBRB.OneRateURL, code)
 		if err != nil {
 			c.log.Error(err)

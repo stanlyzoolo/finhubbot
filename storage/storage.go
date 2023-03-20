@@ -9,21 +9,31 @@ import (
 func Construct() fx.Option {
 	return fx.Provide(
 		repo.NewCommercials,
+		repo.NewNBRB,
 	)
 }
 
 type Storage interface {
 	Commercials() repo.Commercials
+	NatBankRB() repo.NatBankRB
 }
 
 type storage struct {
 	repoCommercials repo.Commercials
+	repoNatBankRB   repo.NatBankRB
 }
 
-func New(c repo.Commercials) Storage {
-	return &storage{repoCommercials: c}
+func New(c repo.Commercials, n repo.NatBankRB) Storage {
+	return &storage{
+		repoCommercials: c,
+		repoNatBankRB:   n,
+	}
 }
 
-func (c *storage) Commercials() repo.Commercials {
-	return c.repoCommercials
+func (s *storage) Commercials() repo.Commercials {
+	return s.repoCommercials
+}
+
+func (s *storage) NatBankRB() repo.NatBankRB {
+	return s.repoNatBankRB
 }

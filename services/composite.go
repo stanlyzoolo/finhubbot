@@ -2,19 +2,19 @@ package services
 
 import (
 	"github.com/stanlyzoolo/smartLaFamiliaBot/services/myfin"
-	"github.com/stanlyzoolo/smartLaFamiliaBot/services/nacbank"
+	"github.com/stanlyzoolo/smartLaFamiliaBot/services/natbank"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/services/telegram"
 )
 
 type Composite interface {
 	MyFin() myfin.Service
-	NatBank() nacbank.NBRB
+	NatBank() natbank.Service
 	TelBot() telegram.Bot
 }
 
 type composite struct {
 	Myfin    myfin.Service
-	NBRB     nacbank.NBRB
+	NBRB     natbank.Service
 	Telegram telegram.Bot
 }
 
@@ -24,7 +24,7 @@ func (c *composite) MyFin() myfin.Service {
 }
 
 // NatBank implements Composite
-func (c *composite) NatBank() nacbank.NBRB {
+func (c *composite) NatBank() natbank.Service {
 	return c.NBRB
 }
 
@@ -33,10 +33,12 @@ func (c *composite) TelBot() telegram.Bot {
 	return c.Telegram
 }
 
-func New(useMyfin myfin.Service, useNBRB nacbank.NBRB, useBot telegram.Bot) Composite {
-	return &composite{
-		Myfin:    useMyfin,
-		NBRB:     useNBRB,
-		Telegram: useBot,
+func New(myfin myfin.Service, natbank natbank.Service, bot telegram.Bot) Composite {
+	c := &composite{
+		Myfin:    myfin,
+		NBRB:     natbank,
+		Telegram: bot,
 	}
+
+	return c
 }

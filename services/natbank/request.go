@@ -1,4 +1,4 @@
-package nacbank
+package natbank
 
 import (
 	"context"

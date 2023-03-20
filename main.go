@@ -6,10 +6,10 @@ import (
 
 	"github.com/stanlyzoolo/smartLaFamiliaBot/config"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/log"
+	"github.com/stanlyzoolo/smartLaFamiliaBot/schema"
 
-	"github.com/stanlyzoolo/smartLaFamiliaBot/services"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/services/myfin"
-	"github.com/stanlyzoolo/smartLaFamiliaBot/services/nacbank"
+	"github.com/stanlyzoolo/smartLaFamiliaBot/services/natbank"
 	bot "github.com/stanlyzoolo/smartLaFamiliaBot/services/telegram"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/storage"
 
@@ -37,27 +37,24 @@ func main() {
 		logger.Error(err)
 	}
 
+	_ = schema.New(logger, db)
+
 	app := fx.New(
 		// fx.NopLogger,
 		fx.Supply(logger, cfg, db),
 		fx.Provide(
 			bot.New,
-			myfin.NewService,
-			nacbank.New,
-			services.New,
 			storage.New,
-			// TODO важно доделать миграцию!
-			// schema.New,
+			natbank.NewService,
+			myfin.NewService,
 		),
 		storage.Construct(),
+		// TODO Не работает этот вызов, скорее всего из за бесконечного цикла в одном из сервисов
 		fx.Invoke(func(
+			_ natbank.Service,
 			_ myfin.Service,
 		) {
 		}),
-		// fx.Invoke(func(
-		// 	_ *schema.Migration,
-		// ) {
-		// }),
 	)
 
 	app.Run()

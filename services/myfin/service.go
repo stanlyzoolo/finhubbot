@@ -13,7 +13,6 @@ import (
 type Service interface {
 	scrapDomain() ([]string, error)
 	storeRates([]string) error
-	// Schedule()
 }
 
 type service struct {
@@ -21,6 +20,21 @@ type service struct {
 	log     *log.Logger
 	cfg     *config.Config
 	storage repo.Commercials
+}
+
+func NewService(log *log.Logger, cfg *config.Config, db *sql.DB) Service {
+	srv := &service{
+		c:       colly.NewCollector(),
+		log:     log,
+		cfg:     cfg,
+		storage: repo.NewCommercials(db, log),
+	}
+
+	go func() {
+		srv.runBySchedule()
+	}()
+
+	return srv
 }
 
 type (
@@ -44,16 +58,3 @@ type (
 		Buying, Selling string
 	}
 )
-
-func NewService(log *log.Logger, cfg *config.Config, db *sql.DB) Service {
-	srv := &service{
-		c:       colly.NewCollector(),
-		log:     log,
-		cfg:     cfg,
-		storage: repo.NewCommercials(db, log),
-	}
-
-	srv.runBySchedule()
-
-	return srv
-}
