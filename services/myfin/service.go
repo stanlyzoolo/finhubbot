@@ -39,7 +39,7 @@ func NewService(log *log.Logger, cfg *config.Config, db *sql.DB) Service {
 		srv.run()
 	}
 
-	if _, err := cr.AddFunc("5 12 * * MON-FRI", run); err != nil {
+	if _, err := cr.AddFunc("15 11 * * MON-FRI", run); err != nil {
 		srv.log.Error(err)
 	}
 

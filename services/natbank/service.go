@@ -40,7 +40,7 @@ func NewService(log *log.Logger, cfg *config.Config, db *sql.DB) Service {
 		srv.run()
 	}
 
-	if _, err := cr.AddFunc("10 12 * * MON-FRI", run); err != nil {
+	if _, err := cr.AddFunc("10 11 * * MON-FRI", run); err != nil {
 		srv.log.Error(err)
 	}
 
@@ -52,16 +52,14 @@ func NewService(log *log.Logger, cfg *config.Config, db *sql.DB) Service {
 }
 
 func (s *service) run() {
-	for i := 1; i <= len(codesAndFlags); i++ {
-		rates, err := s.getCurrenciesRates(context.Background())
-		if err != nil {
-			s.log.Error(err)
-		}
+	rates, err := s.getCurrenciesRates(context.Background())
+	if err != nil {
+		s.log.Error(err)
+	}
 
-		if err = s.storeRates(context.Background(), rates); err != nil {
-			s.log.Error(err)
+	if err = s.storeRates(context.Background(), rates); err != nil {
+		s.log.Error(err)
 
-			return
-		}
+		return
 	}
 }
