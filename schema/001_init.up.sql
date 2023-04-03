@@ -7,7 +7,5 @@ create table if not exists commercials (
     euro_out float,
     rub_in float,
     rub_out float,
-    conv_usd_to_euro_in float,
-    conv_usd_to_euro_out float,
     date datetime
 );

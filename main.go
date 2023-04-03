@@ -53,6 +53,7 @@ func main() {
 		fx.Invoke(func(
 			_ natbank.Service,
 			_ myfin.Service,
+			_ bot.Bot,
 		) {
 		}),
 	)

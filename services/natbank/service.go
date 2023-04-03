@@ -4,11 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"net/http"
-	"time"
 
+	"github.com/robfig/cron/v3"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/config"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/log"
-	"github.com/stanlyzoolo/smartLaFamiliaBot/services/myfin"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/storage/repo"
 )
 
@@ -20,68 +19,49 @@ type Service interface {
 
 type service struct {
 	client  *http.Client
+	cr      *cron.Cron
 	log     *log.Logger
 	cfg     *config.Config
 	storage repo.NatBankRB
 }
 
 func NewService(log *log.Logger, cfg *config.Config, db *sql.DB) Service {
+	cr := cron.New()
+
 	srv := &service{
 		client:  &http.Client{},
+		cr:      cr,
 		log:     log,
 		cfg:     cfg,
 		storage: repo.NewNBRB(db, log),
 	}
 
-	delay := time.Second * time.Duration(srv.cfg.MyFin.Delay)
+	run := func() {
+		srv.run()
+	}
+
+	if _, err := cr.AddFunc("10 12 * * MON-FRI", run); err != nil {
+		srv.log.Error(err)
+	}
 
 	go func() {
-		srv.run(delay)
+		cr.Run()
 	}()
 
 	return srv
 }
 
-func (s *service) run(delay time.Duration) {
-	t := time.NewTicker(time.Second)
+func (s *service) run() {
+	for i := 1; i <= len(codesAndFlags); i++ {
+		rates, err := s.getCurrenciesRates(context.Background())
+		if err != nil {
+			s.log.Error(err)
+		}
 
-	ctx := context.Background()
-
-	for {
-		select {
-		case <-ctx.Done():
-			s.log.Info("Done")
+		if err = s.storeRates(context.Background(), rates); err != nil {
+			s.log.Error(err)
 
 			return
-		case <-t.C:
-			time.Sleep(delay)
-
-			today := time.Now().Weekday().String()
-
-			if s.allowedWeekdays().Has(today) {
-				for i := 1; i <= len(codesAndFlags); i++ {
-					rates, err := s.getCurrenciesRates(ctx)
-					if err != nil {
-						s.log.Error(err)
-					}
-
-					if err = s.storeRates(ctx, rates); err != nil {
-						s.log.Error(err)
-
-						return
-					}
-				}
-			}
 		}
 	}
-}
-
-func (s *service) allowedWeekdays() *myfin.Weekdays {
-	weekdays := make(myfin.Weekdays, len(s.cfg.MyFin.AllowedWeekdays))
-
-	for i, day := range s.cfg.MyFin.AllowedWeekdays {
-		weekdays[day] = myfin.Weekday(i)
-	}
-
-	return &weekdays
 }

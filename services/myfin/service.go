@@ -3,6 +3,7 @@ package myfin
 import (
 	"database/sql"
 
+	"github.com/robfig/cron/v3"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/config"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/log"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/storage/repo"
@@ -17,21 +18,33 @@ type Service interface {
 
 type service struct {
 	c       *colly.Collector
+	cr      *cron.Cron
 	log     *log.Logger
 	cfg     *config.Config
 	storage repo.Commercials
 }
 
 func NewService(log *log.Logger, cfg *config.Config, db *sql.DB) Service {
+	cr := cron.New()
+
 	srv := &service{
 		c:       colly.NewCollector(),
+		cr:      cr,
 		log:     log,
 		cfg:     cfg,
 		storage: repo.NewCommercials(db, log),
 	}
 
+	run := func() {
+		srv.run()
+	}
+
+	if _, err := cr.AddFunc("5 12 * * MON-FRI", run); err != nil {
+		srv.log.Error(err)
+	}
+
 	go func() {
-		srv.runBySchedule()
+		cr.Run()
 	}()
 
 	return srv

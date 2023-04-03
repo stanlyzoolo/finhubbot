@@ -27,6 +27,8 @@ require (
 	github.com/gocolly/colly v1.2.0
 	github.com/golang-migrate/migrate v3.5.4+incompatible
 	github.com/mattn/go-sqlite3 v1.14.16
+	github.com/robfig/cron v1.2.0
+	github.com/robfig/cron/v3 v3.0.1
 	go.uber.org/fx v1.19.1
 	go.uber.org/zap v1.24.0
 	golang.org/x/net v0.5.0 // indirect; indirect; indirect // indirect
