@@ -7,5 +7,5 @@ create table if not exists commercials (
     euro_out float,
     rub_in float,
     rub_out float,
-    date datetime
+    requested_at datetime not null default current_timestamp
 );

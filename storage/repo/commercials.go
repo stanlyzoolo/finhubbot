@@ -3,7 +3,6 @@ package repo
 import (
 	"context"
 	"database/sql"
-	"time"
 
 	"github.com/stanlyzoolo/smartLaFamiliaBot/log"
 	"github.com/stanlyzoolo/smartLaFamiliaBot/storage/dbo"
@@ -29,8 +28,8 @@ func NewCommercials(db *sql.DB, log *log.Logger) Commercials {
 
 // TODO Может всё таки возвращать ID --> returning id
 func (c *commercials) Create(ctx context.Context, dbo dbo.CommercialRate) error {
-	q := `insert into commercials (bank, usd_in, usd_out, euro_in, euro_out, rub_in, rub_out, date) 
-	values ($1, $2, $3, $4, $5, $6, $7, $8)`
+	q := `insert into commercials (bank, usd_in, usd_out, euro_in, euro_out, rub_in, rub_out) 
+	values ($1, $2, $3, $4, $5, $6, $7)`
 
 	_, err := c.db.ExecContext(
 		ctx,
@@ -41,7 +40,6 @@ func (c *commercials) Create(ctx context.Context, dbo dbo.CommercialRate) error 
 		dbo.EUR.Selling,
 		dbo.RUB.Buying,
 		dbo.RUB.Selling,
-		time.Now(),
 	)
 	if err != nil {
 		return err

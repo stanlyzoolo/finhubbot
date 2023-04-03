@@ -4,5 +4,6 @@ create table if not exists nat_bank (
     abbreviation text,
     name text,
     scale int,
-    official_rate float
+    official_rate float,
+    requested_at datetime not null default current_timestamp
 );
