@@ -3,8 +3,6 @@ package config
 import (
 	"fmt"
 	"os"
-	"strconv"
-	"strings"
 )
 
 type (
@@ -48,41 +46,6 @@ func New() (*Config, error) { // nolint
 		return nil, fmt.Errorf("MYFIN_URL: %w", ErrEmptyEnvVariable)
 	}
 
-	count, ok := os.LookupEnv("ITERATIONS_COUNT")
-	if !ok || len(count) == 0 {
-		return nil, fmt.Errorf("ITERATIONS_COUNT: %w", ErrEmptyEnvVariable)
-	}
-
-	icount, err := strconv.Atoi(count)
-	if err != nil {
-		return nil, fmt.Errorf("failed to convert COUNT to int type: %w", err)
-	}
-
-	delay, ok := os.LookupEnv("DELAY")
-	if !ok || len(delay) == 0 {
-		return nil, fmt.Errorf("DELAY: %w", ErrEmptyEnvVariable)
-	}
-
-	idelay, err := strconv.Atoi(delay)
-	if err != nil {
-		return nil, fmt.Errorf("failed to convert DELAY to int type: %w", err)
-	}
-
-	every, ok := os.LookupEnv("EVERY")
-	if !ok || len(every) == 0 {
-		return nil, fmt.Errorf("EVERY: %w", ErrEmptyEnvVariable)
-	}
-
-	ievery, err := strconv.Atoi(every)
-	if err != nil {
-		return nil, fmt.Errorf("failed to convert EVERY to int type: %w", err)
-	}
-
-	allowedWeekdays, ok := os.LookupEnv("ALLOWED_WEEKDAYS")
-	if !ok || len(allowedWeekdays) == 0 {
-		return nil, fmt.Errorf("ALLOWED_WEEKDAYS: %w", ErrEmptyEnvVariable)
-	}
-
 	// NBRB
 	allRatesURL, ok := os.LookupEnv("ALL_RATES_URL")
 	if !ok || len(allRatesURL) == 0 {
@@ -106,22 +69,17 @@ func New() (*Config, error) { // nolint
 	}
 
 	return &Config{
-			MyFin: &MyFin{
-				Delay:           idelay,
-				Every:           ievery,
-				IterationsCount: icount,
-				URL:             url,
-				AllowedDomain:   allowedDomain,
-				AllowedWeekdays: strings.Split(allowedWeekdays, " "),
-			},
-			NBRB: &NBRB{
-				AllRatesURL: allRatesURL,
-				OneRateURL:  oneRateURL,
-			},
-			Telegram: &Telegram{
-				APIkey: apiKey,
-				ChatID: chatID,
-			},
+		MyFin: &MyFin{
+			URL:           url,
+			AllowedDomain: allowedDomain,
 		},
-		err
+		NBRB: &NBRB{
+			AllRatesURL: allRatesURL,
+			OneRateURL:  oneRateURL,
+		},
+		Telegram: &Telegram{
+			APIkey: apiKey,
+			ChatID: chatID,
+		},
+	}, nil
 }
